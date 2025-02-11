@@ -9,32 +9,29 @@ WORKDIR /app
 
 # 1) 로컬에서 준비한 Maven 캐시를 복사
 #    - 예: 로컬 프로젝트에 .m2/repository 폴더가 있다고 가정
-COPY .m2 /root/.m2
+#COPY .m2 /root/.m2
 
 # 2) pom.xml만 먼저 복사해 dependency:go-offline 용 캐싱도 가능
-COPY pom.xml .
+#COPY pom.xml .
 # (이미 .m2/repository에 의존성이 있다면, 여기서 dependency:go-offline을 해도
 #  별도 다운로드는 거의 없을 것입니다.)
-RUN mvn dependency:go-offline
+#RUN mvn dependency:go-offline
 # 3) 이후 전체 소스 복사
-COPY src ./src
+#COPY src ./src
 
 
 # settings.xml 파일을 복사해 Maven이 사내 Nexus를 바라보게 함
-#COPY settings.xml /root/.m2/settings.xml
+COPY settings.xml /root/.m2/settings.xml
 
 # pom.xml, 소스 복사
-#COPY pom.xml .
-#RUN mvn dependency:go-offline -s /root/.m2/settings.xml
+COPY pom.xml .
+RUN mvn dependency:go-offline -s /root/.m2/settings.xml
 
-#COPY src ./src
-#RUN mvn clean package -DskipTests -s /root/.m2/settings.xml
-
-
+COPY src ./src
+RUN mvn clean package -DskipTests -s /root/.m2/settings.xml
 
 
-
-RUN mvn clean package -DskipTests
+#RUN mvn clean package -DskipTests
 
 # ======================================================================
 # 런타임 스테이지: 경량 JRE로 실행
