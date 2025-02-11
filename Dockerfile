@@ -4,9 +4,12 @@
 FROM maven:3.9.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# 프로젝트 전체를 복사 (src, pom.xml, .m2 등 모두 포함)
-#COPY . /app
 
+#---------일반-----------
+# 프로젝트 전체를 복사 (src, pom.xml, .m2 등 모두 포함)
+COPY . /app
+
+#--------------로컬------------------
 # 1) 로컬에서 준비한 Maven 캐시를 복사
 #    - 예: 로컬 프로젝트에 .m2/repository 폴더가 있다고 가정
 #COPY .m2 /root/.m2
@@ -20,15 +23,16 @@ WORKDIR /app
 #COPY src ./src
 
 
+#---------------사내 레파지토리-----------------------
 # settings.xml 파일을 복사해 Maven이 사내 Nexus를 바라보게 함
-COPY settings.xml /root/.m2/settings.xml
+#COPY settings.xml /root/.m2/settings.xml
 
 # pom.xml, 소스 복사
-COPY pom.xml .
-RUN mvn dependency:go-offline -s /root/.m2/settings.xml
+#COPY pom.xml .
+#RUN mvn dependency:go-offline -s /root/.m2/settings.xml
 
-COPY src ./src
-RUN mvn clean package -DskipTests -s /root/.m2/settings.xml
+#COPY src ./src
+#RUN mvn clean package -DskipTests -s /root/.m2/settings.xml
 
 
 #RUN mvn clean package -DskipTests
